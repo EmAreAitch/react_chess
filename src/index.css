@@ -3,7 +3,7 @@
 body,
 #root {
     height: 100%;
-    background-image: url('chess_background.png');
+    background-image: url('/public/chess_background.png');
     padding: 0;
 }
 
