@@ -1,8 +1,10 @@
-# React + Vite
+# Chess frontend in React
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Chess frontend that uses rails chess backend to simulate a chess game
 
-Currently, two official plugins are available:
+Modes
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- Plaver vs Friend
+- Plaver vs Easy bot
+- Plaver vs Normal bot
+- Plaver vs Hard bot
