@@ -1,0 +1,26 @@
+@import url('https://fonts.googleapis.com/css2?family=Inknut+Antiqua:wght@300;400;500;600;700;800;900&family=Oi&display=swap');
+
+body,
+#root {
+    height: 100%;
+    background-image: url('chess_background.png');
+    padding: 0;
+}
+
+.glow-animation {
+    animation: glowing 1s ease-in-out infinite alternate;
+    border: 1px solid #6d1b7b;
+}
+
+@keyframes glowing {
+    from {
+        box-shadow: 0 0 0px #e864ff;
+    }
+
+    /* Start with no shadow */
+    to {
+        box-shadow: 0 0 30px #e864ff;
+    }
+
+    /* Expand shadow for glow */
+}
