@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useMemo, useRef} from "react";
 import RoomForm from "./RoomForm";
 import { Chessboard } from "react-chessboard";
 import { Box, useMediaQuery } from "@mui/material";
@@ -19,7 +19,7 @@ export default function Game({ playerName }) {
         playerColor: undefined
     })
     const isSmallScreen = useMediaQuery((theme) => theme.breakpoints.down('sm'));
-    const consumer = useMemo(() => createConsumer(`ws://127.0.0.1:3000/cable?name=${playerName}`), []); // Player name does not change
+    const consumer = useMemo(() => createConsumer(`wss://rails-chess.onrender.com/cable?name=${playerName}`), []); // Player name does not change
     const cable = useRef(undefined);
     const { roomCode, roomJoined, gameStarted, result, opponentName, fen, playerColor } = gameState
 
