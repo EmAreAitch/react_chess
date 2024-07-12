@@ -12,6 +12,10 @@ const notyf = new Notyf({
 
 const gameReducer = (state, action) => {
     switch (action.type) {
+        case 'set_room': {
+            state.roomCode = action.roomCode
+            break
+        }
         case 'success': {
             state.fen = action.data.state
             break
@@ -44,7 +48,7 @@ const gameReducer = (state, action) => {
         }
         case 'error': {
             notyf.error('Unable to join room');
-            state.roomCode = undefined
+            state.roomCode = null
             break;
         }
         case 'play_again': {

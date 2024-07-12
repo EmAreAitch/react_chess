@@ -1,4 +1,4 @@
-import { useMemo, useRef} from "react";
+import { useMemo, useRef } from "react";
 import RoomForm from "./RoomForm";
 import { Chessboard } from "react-chessboard";
 import { Box, useMediaQuery } from "@mui/material";
@@ -10,7 +10,7 @@ import gameReducer from "../reducers/GameReducer";
 
 export default function Game({ playerName }) {
     const [gameState, dispatch] = useImmerReducer(gameReducer, {
-        roomCode: undefined,
+        roomCode: null,
         roomJoined: false,
         gameStarted: false,
         result: undefined,
@@ -19,13 +19,13 @@ export default function Game({ playerName }) {
         playerColor: undefined
     })
     const isSmallScreen = useMediaQuery((theme) => theme.breakpoints.down('sm'));
-    const consumer = useMemo(() => createConsumer(`wss://rails-chess.onrender.com/cable?name=${playerName}`), []); // Player name does not change
+    const consumer = useMemo(() => createConsumer(`${import.meta.env.PROD ? import.meta.env.VITE_DOMAIN : "ws://0.0.0.0:3000"}/cable?name=${playerName}`), []); // Player name does not change
     const cable = useRef(undefined);
     const { roomCode, roomJoined, gameStarted, result, opponentName, fen, playerColor } = gameState
+    window.cable = cable
+    window.roomCode = roomCode
 
-    const connectionHandler = {
-        connected: () => { },
-        disconnected: () => { },
+    const connectionHandler = {        
         received: (data) => {
             dispatch({ type: data.status, data })
         },
@@ -47,13 +47,14 @@ export default function Game({ playerName }) {
     }
 
     const handleNewGame = (action) => {
+        dispatch({type: 'set_room', roomCode: undefined})
         switch (action.type) {
             case 'new_room':
                 cable.current = consumer.subscriptions.create({ channel: "PvpChannel" }, connectionHandler)
                 break;
 
             case 'join_room':
-                cable.current = consumer.subscriptions.create({ channel: "PvpChannel", room_code: action.room }, connectionHandler)                
+                cable.current = consumer.subscriptions.create({ channel: "PvpChannel", room_code: action.room }, connectionHandler)
                 break;
 
             case 'bot':
@@ -77,7 +78,7 @@ export default function Game({ playerName }) {
                     playerTurn={handleDraggability()}
                 />
             ) : (
-                <RoomForm handleNewGame={handleNewGame} loading={roomCode != undefined} playerName={playerName} />
+                <RoomForm handleNewGame={handleNewGame} loading={roomCode === undefined} playerName={playerName} />
             )}
             <Box display='flex' justifyContent='center'>
                 <Box width={{ xs: '90%', sm: 450 }}>
