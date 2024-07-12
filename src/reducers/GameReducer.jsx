@@ -52,7 +52,7 @@ const gameReducer = (state, action) => {
             break;
         }
         case 'play_again': {
-            state.roomCode = undefined
+            state.roomCode = null
             state.roomJoined = false
             state.gameStarted = false
             state.result = undefined
@@ -64,7 +64,7 @@ const gameReducer = (state, action) => {
                 type: 'warning',
                 message: action.data.message
             });
-            state.roomCode = undefined
+            state.roomCode = null
             state.roomJoined = false
             state.gameStarted = false
             state.opponentName = undefined
