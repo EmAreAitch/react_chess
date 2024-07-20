@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { TextField, Button, Box, Paper, ButtonGroup, Grid, Divider, Typography, CircularProgress, useMediaQuery, Select, MenuItem, InputLabel, FormControl, Stack, Dialog, DialogContent, DialogContentText, DialogTitle, IconButton } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
-export default function RoomForm({ handleNewGame, loading, playerName }) {
+export default function RoomForm({ handleNewGame, loading, playerName, resetName }) {
     const [room, setRoom] = useState('');
     const [open, setOpen] = useState(false)
     const [value, setValue] = useState('player'); // Set your default value here    
@@ -13,13 +13,13 @@ export default function RoomForm({ handleNewGame, loading, playerName }) {
             case 'player':
                 setOpen(true)
                 break;
-        
+
             default:
                 if (value.slice(-3) === 'bot')
-                    handleNewGame({type: 'bot', difficulty: value})
+                    handleNewGame({ type: 'bot', difficulty: value })
                 break;
         }
-            
+
     }
 
     const handleClose = (e) => {
@@ -34,9 +34,11 @@ export default function RoomForm({ handleNewGame, loading, playerName }) {
         <Box display='flex' justifyContent='center' alignItems='start' padding={2}>
             <Paper variant='outlined'>
                 <Stack direction={isSmallScreen ? 'column' : 'row'} spacing={1} justifyContent={'center'} alignItems={'center'} padding={'10px 20px'}>
-                    <Typography borderBottom={'1px solid'} borderColor={'primary.main'} paddingX={2}>
-                        {playerName}
-                    </Typography>
+                    <Button size='large' onClick={resetName}>
+                        <Typography borderBottom={'1px solid'} borderColor={'primary.main'} paddingX={2} color={'white'} textTransform={'none'}>
+                            {playerName}
+                        </Typography>
+                    </Button>
                     <Divider sx={{ flexGrow: 1, minWidth: '75px' }} flexItem={isSmallScreen}>
                         {loading ? (
                             <CircularProgress size={isSmallScreen ? '1rem' : '2rem'} />
@@ -89,12 +91,16 @@ export default function RoomForm({ handleNewGame, loading, playerName }) {
                 </IconButton>
                 <DialogContent dividers>
                     <Stack spacing={2} divider={<Divider>OR</Divider>}>
-                        <Button variant='contained' onClick={() => handleNewGame({ type: "new_room" })}>
+                        <Button variant='contained' onClick={() => {
+                            handleNewGame({ type: "new_room" })
+                            setOpen(false)
+                        }}>
                             Create room
                         </Button>
                         <form onSubmit={(e) => {
                             e.preventDefault()
                             handleNewGame({ type: "join_room", room })
+                            setOpen(false)
                         }}>
                             <ButtonGroup>
                                 <FormControl>

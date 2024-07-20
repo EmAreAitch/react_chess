@@ -17,6 +17,24 @@ export default function GameEndModal({ result, handlePlayAgain }) {
         },
         stalemate: {
             title: 'Stalemate!',
+            description: 'The game ended in a stalemate. Well played!',
+            borderColor: 'orange',
+            backgroundColor: 'rgba(255, 165, 0, 0.5)',
+        },
+        player_resign: {
+            title: 'Resigned!',
+            description: 'You decided to resign. Keep practicing and come back stronger!',
+            borderColor: 'red',
+            backgroundColor: 'rgba(255, 51, 51, 0.5)',
+        },
+        opponent_resign: {
+            title: 'Opponent Resigned!',
+            description: 'Your opponent resigned. Well done on securing the victory!',
+            borderColor: 'green',
+            backgroundColor: 'rgba(144, 238, 144, 0.5)',
+        },
+        draw: {
+            title: 'Draw!',
             description: 'The game ended in a draw. Well played!',
             borderColor: 'orange',
             backgroundColor: 'rgba(255, 165, 0, 0.5)',

@@ -1,14 +1,14 @@
-import { useMemo, useRef } from "react";
+import { useMemo, useRef, useState, useEffect } from "react";
 import RoomForm from "./RoomForm";
 import { Chessboard } from "react-chessboard";
-import { Box, useMediaQuery } from "@mui/material";
+import { Box, Snackbar, useMediaQuery, Button, Stack } from "@mui/material";
 import { createConsumer } from "@rails/actioncable";
 import GameDetails from "./GameDetails";
 import GameEndModal from "./GameEndModal";
 import { useImmerReducer } from "use-immer";
 import gameReducer from "../reducers/GameReducer";
 
-export default function Game({ playerName }) {
+export default function Game({ playerName, resetName }) {
     const [gameState, dispatch] = useImmerReducer(gameReducer, {
         roomCode: null,
         roomJoined: false,
@@ -16,21 +16,18 @@ export default function Game({ playerName }) {
         result: undefined,
         opponentName: undefined,
         fen: 'start',
-        playerColor: undefined
+        playerColor: undefined,
+        snackbarOpen: false
     })
+
     const isSmallScreen = useMediaQuery((theme) => theme.breakpoints.down('sm'));
     const consumer = useMemo(() => createConsumer(`${import.meta.env.PROD ? import.meta.env.VITE_DOMAIN : "ws://0.0.0.0:3000"}/cable?name=${playerName}`), []); // Player name does not change
     const cable = useRef(undefined);
-    const { roomCode, roomJoined, gameStarted, result, opponentName, fen, playerColor } = gameState
-    window.cable = cable
-    window.roomCode = roomCode
-
-    const connectionHandler = {        
-        received: (data) => {
-            dispatch({ type: data.status, data })
-        },
+    const { roomCode, roomJoined, gameStarted, result, opponentName, fen, playerColor, snackbarOpen } = gameState
+    // const [snackbarOpen, setSnackbarOpen] = useState(false);
+    const connectionHandler = {
+        received: (data) => dispatch({ type: data.status, data }),
     };
-
 
     const sendMove = (sourceSquare, targetSquare, piece) => {
         cable.current?.send({ move: sourceSquare + targetSquare, promotion: piece[1] });
@@ -47,7 +44,7 @@ export default function Game({ playerName }) {
     }
 
     const handleNewGame = (action) => {
-        dispatch({type: 'set_room', roomCode: undefined})
+        dispatch({ type: 'set_room', roomCode: undefined })
         switch (action.type) {
             case 'new_room':
                 cable.current = consumer.subscriptions.create({ channel: "PvpChannel" }, connectionHandler)
@@ -66,6 +63,32 @@ export default function Game({ playerName }) {
                 break;
         }
     }
+
+    const handleResign = () => {
+        cable.current?.perform("resign")
+        dispatch({ type: 'player_resign' })
+    }
+
+    const handleOfferDraw = () => {
+        cable.current?.perform("offer_draw")
+    }
+
+    const handleDrawResponse = (response) => {
+        cable.current?.perform("draw_offer_response", { isAccepted: response })
+        dispatch({ type: 'set_snackbar', snackbarOpen: false })
+    }
+
+    useEffect(() => {
+        if (snackbarOpen) {          
+          const timer = setTimeout(() => {            
+            handleDrawResponse(false)
+          }, 10000);
+    
+          return () => clearTimeout(timer);
+        }
+      }, [snackbarOpen]);
+    
+
     return (
         <>
             {roomJoined ? (
@@ -76,9 +99,11 @@ export default function Game({ playerName }) {
                     opponentName={opponentName}
                     gameStarted={gameStarted}
                     playerTurn={handleDraggability()}
+                    resign={handleResign}
+                    offerDraw={handleOfferDraw}
                 />
             ) : (
-                <RoomForm handleNewGame={handleNewGame} loading={roomCode === undefined} playerName={playerName} />
+                <RoomForm handleNewGame={handleNewGame} loading={roomCode === undefined} playerName={playerName} resetName={resetName} />
             )}
             <Box display='flex' justifyContent='center'>
                 <Box width={{ xs: '90%', sm: 450 }}>
@@ -103,6 +128,21 @@ export default function Game({ playerName }) {
                 </Box>
                 {result !== undefined && <GameEndModal result={result} handlePlayAgain={handlePlayAgain} />}
             </Box>
+            <Snackbar
+                open={snackbarOpen}                
+                ContentProps={{ sx: { backgroundColor: 'primary.main', color: 'white' } }}
+                message={`${opponentName} offered a draw. Auto-reject in 10s.`}
+                action={
+                    <Stack direction={'row'} gap={1}>
+                        <Button color="error" variant="contained" size="small" sx={{ textTransform: 'none' }} onClick={() => { handleDrawResponse(false) }}>
+                            Reject
+                        </Button>
+                        <Button color="success" size="small" variant="contained" sx={{ textTransform: 'none' }} onClick={() => { handleDrawResponse(true) }}>
+                            Accept
+                        </Button>
+                    </Stack>
+                }
+            />
         </>
     );
 }

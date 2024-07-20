@@ -16,7 +16,7 @@ const gameReducer = (state, action) => {
             state.roomCode = action.roomCode
             break
         }
-        case 'success': {
+        case 'success': {              
             state.fen = action.data.state
             break
         }
@@ -42,6 +42,14 @@ const gameReducer = (state, action) => {
             state.result = action.data.color === state.playerColor ? 'winner' : 'loser'
             break
         }
+        case 'opponent_resign': {
+            state.result = 'opponent_resign'
+            break
+        }
+        case 'player_resign': {
+            state.result = 'player_resign'
+            break
+        }        
         case 'stalemate': {
             state.result = 'stalemate'
             break;
@@ -68,6 +76,34 @@ const gameReducer = (state, action) => {
             state.roomJoined = false
             state.gameStarted = false
             state.opponentName = undefined
+            break
+        }
+        case 'set_snackbar': {
+            state.snackbarOpen = action.snackbarOpen
+            break
+        }
+        case 'draw_offered': {
+            let color = action.data.color
+            if (state.playerColor === color) {
+                notyf.success("Offer sent")
+            } else {
+                state.snackbarOpen = true
+            }
+            break
+        }
+        case 'draw_accepted': {
+            state.result = 'draw'
+            break
+        }
+        case 'draw_rejected': {
+            notyf.error("Draw offer rejected")
+            break
+        }
+        case 'draw_cooldown': {
+            notyf.open({
+                type: 'warning',
+                message: "Wait for 2 mintues since last offer"
+            });
             break
         }
         default: {

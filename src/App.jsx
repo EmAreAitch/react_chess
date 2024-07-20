@@ -8,7 +8,7 @@ function App() {
     {playerName == undefined ? (
       <NameForm setPlayerName={setPlayerName} />
     ) : (
-      <Game playerName={playerName} />
+      <Game playerName={playerName} resetName={() => setPlayerName(undefined)}/>
     )}
   </>
 }
