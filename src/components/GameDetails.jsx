@@ -4,7 +4,7 @@ import HandshakeIcon from '@mui/icons-material/Handshake';
 import EmojiFlagsIcon from '@mui/icons-material/EmojiFlags';
 
 export default function GameDetails({ roomCode, playerName, playerColor, opponentName, gameStarted, playerTurn, resign, offerDraw }) {
-    const isSmallScreen = useMediaQuery((theme) => theme.breakpoints.down('sm'));
+    const isSmallScreen = useMediaQuery((theme) => theme.breakpoints.down('md'));
     const opponnetColor = () => {
         return ({
             white: 'black',
@@ -33,9 +33,9 @@ export default function GameDetails({ roomCode, playerName, playerColor, opponen
         }
     }
     return <Box display='flex' justifyContent='center' alignItems='start' padding={2} width='100%'>
-        <Paper variant='outlined' sx={{ paddingX: 2, paddingY: 1, display: 'flex', gap: 2, width: { xs: '90%', sm: 'auto' }, justifyContent: 'center' }}>
-            <Stack direction={{ xs: 'column', sm: 'row' }} alignItems={'center'} justifyContent={'center'} spacing={1} divider={getDivider()}>
-                <Stack direction={'row'} justifyContent={'center'} spacing={2} alignContent={'center'} width={'275px'}>
+        <Paper variant='outlined' sx={{ paddingX: 2, paddingY: 1, display: 'flex', gap: 2, justifyContent: 'center' }}>
+            <Stack direction={{ xs:'column', lg: 'row' }} alignItems={'center'} justifyContent={'center'} spacing={1} divider={getDivider()} paddingY={0.5}>
+                <Stack direction={'row'} justifyContent={'center'} spacing={1} alignContent={'center'}>
                     <Button size='small' variant="contained" endIcon={<HandshakeIcon />} disabled={isDrawDisabled()} onClick={offerDraw}>
                         Offer Draw
                     </Button>

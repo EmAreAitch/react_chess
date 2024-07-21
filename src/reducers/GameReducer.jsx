@@ -18,9 +18,15 @@ const gameReducer = (state, action) => {
         }
         case 'success': {              
             state.fen = action.data.state
+            state.playerTurn = action.data.state.split(' ')[1] === state.playerColor[0]
+            break
+        }
+        case 'set_fen': {
+            state.fen = action.fen
             break
         }
         case 'failed': {
+            state.fen = action.data.state
             notyf.error(action.data.message)
             break
         }
@@ -35,7 +41,8 @@ const gameReducer = (state, action) => {
             const opponentColor = state.playerColor === 'white' ? 'black' : 'white'
             state.opponentName = action.data[opponentColor]
             state.fen = "start"
-            notyf.success("Game Begins")
+            state.playerTurn = state.playerColor === 'white'
+            notyf.success("Game Begins")            
             break
         }
         case 'checkmate': {

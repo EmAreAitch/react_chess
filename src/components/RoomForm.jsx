@@ -6,7 +6,7 @@ export default function RoomForm({ handleNewGame, loading, playerName, resetName
     const [open, setOpen] = useState(false)
     const [value, setValue] = useState('player'); // Set your default value here    
 
-    const isSmallScreen = useMediaQuery((theme) => theme.breakpoints.down('sm'));
+    const isSmallScreen = useMediaQuery((theme) => theme.breakpoints.down('md'));
     const handleSubmit = (e) => {
         e.preventDefault();
         switch (value) {

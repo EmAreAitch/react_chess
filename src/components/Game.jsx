@@ -8,7 +8,7 @@ import GameEndModal from "./GameEndModal";
 import { useImmerReducer } from "use-immer";
 import gameReducer from "../reducers/GameReducer";
 
-export default function Game({ playerName, resetName }) {
+export default function Game({ playerName, resetName }) {    
     const [gameState, dispatch] = useImmerReducer(gameReducer, {
         roomCode: null,
         roomJoined: false,
@@ -17,26 +17,27 @@ export default function Game({ playerName, resetName }) {
         opponentName: undefined,
         fen: 'start',
         playerColor: undefined,
-        snackbarOpen: false
+        snackbarOpen: false,
+        playerTurn: false
     })
 
     const isSmallScreen = useMediaQuery((theme) => theme.breakpoints.down('sm'));
     const consumer = useMemo(() => createConsumer(`${import.meta.env.PROD ? import.meta.env.VITE_DOMAIN : "ws://0.0.0.0:3000"}/cable?name=${playerName}`), []); // Player name does not change
     const cable = useRef(undefined);
-    const { roomCode, roomJoined, gameStarted, result, opponentName, fen, playerColor, snackbarOpen } = gameState
-    // const [snackbarOpen, setSnackbarOpen] = useState(false);
+    const { roomCode, roomJoined, gameStarted, result, opponentName, fen, playerColor, snackbarOpen, playerTurn } = gameState
+    const positionObj = useRef(undefined)
     const connectionHandler = {
         received: (data) => dispatch({ type: data.status, data }),
     };
 
     const sendMove = (sourceSquare, targetSquare, piece) => {
+        const position = { ...positionObj.current }
+        position[targetSquare] = piece
+        delete position[sourceSquare]
+        dispatch({type: 'set_fen',fen: position})
         cable.current?.send({ move: sourceSquare + targetSquare, promotion: piece[1] });
+        return true
     };
-
-    const handleDraggability = () => {
-        const playerTurn = fen.split(' ')[1]
-        return (playerColor[0] === playerTurn || (playerColor[0] === 'w' && fen === 'start'))
-    }
 
     const handlePlayAgain = () => {
         dispatch({ type: 'play_again' })
@@ -79,15 +80,14 @@ export default function Game({ playerName, resetName }) {
     }
 
     useEffect(() => {
-        if (snackbarOpen) {          
-          const timer = setTimeout(() => {            
-            handleDrawResponse(false)
-          }, 10000);
-    
-          return () => clearTimeout(timer);
+        if (snackbarOpen) {
+            const timer = setTimeout(() => {
+                handleDrawResponse(false)
+            }, 10000);
+
+            return () => clearTimeout(timer);
         }
-      }, [snackbarOpen]);
-    
+    }, [snackbarOpen]);
 
     return (
         <>
@@ -98,7 +98,7 @@ export default function Game({ playerName, resetName }) {
                     playerColor={playerColor}
                     opponentName={opponentName}
                     gameStarted={gameStarted}
-                    playerTurn={handleDraggability()}
+                    playerTurn={playerTurn}
                     resign={handleResign}
                     offerDraw={handleOfferDraw}
                 />
@@ -111,15 +111,18 @@ export default function Game({ playerName, resetName }) {
                         position={fen}
                         key="playground"
                         customDarkSquareStyle={{ backgroundColor: '#6d1b7b' }}
-                        boardOrientation={playerColor}
+                        boardOrientation={playerColor}                        
                         {...(isSmallScreen ? {} : { boardWidth: 450 })}
                         {
                         ...(gameStarted ?
                             {
                                 key: 'main',
                                 onPieceDrop: sendMove,
-                                arePiecesDraggable: handleDraggability(),
+                                arePiecesDraggable: playerTurn,
                                 isDraggablePiece: ({ piece }) => piece[0] == playerColor[0],
+                                getPositionObject: (e) => {                                    
+                                    positionObj.current = e
+                                }
                             } :
                             {}
                         )
@@ -129,7 +132,7 @@ export default function Game({ playerName, resetName }) {
                 {result !== undefined && <GameEndModal result={result} handlePlayAgain={handlePlayAgain} />}
             </Box>
             <Snackbar
-                open={snackbarOpen}                
+                open={snackbarOpen}
                 ContentProps={{ sx: { backgroundColor: 'primary.main', color: 'white' } }}
                 message={`${opponentName} offered a draw. Auto-reject in 10s.`}
                 action={

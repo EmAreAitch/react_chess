@@ -19,7 +19,7 @@ body,
 
     /* Start with no shadow */
     to {
-        box-shadow: 0 0 30px #e864ff;
+        box-shadow: 0 0 20px 5px #e864ff;
     }
 
     /* Expand shadow for glow */
