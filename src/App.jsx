@@ -5,7 +5,7 @@ import { Box, Link } from '@mui/material';
 
 function App() {
   const [playerName, setPlayerName] = useState(sessionStorage.getItem('name'));
-  return <Box minHeight={'550px'} height={'100vh'} position={'relative'}>
+  return <Box minHeight={'550px'} height={'100dvh'} position={'relative'}>
     {playerName == undefined ? (
       <NameForm setPlayerName={setPlayerName} />
     ) : (
