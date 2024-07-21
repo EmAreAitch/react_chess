@@ -111,7 +111,7 @@ export default function Game({ playerName, resetName }) {
                         position={fen}
                         key="playground"
                         customDarkSquareStyle={{ backgroundColor: '#6d1b7b' }}
-                        boardOrientation={playerColor}                        
+                        boardOrientation={playerColor}                           
                         {...(isSmallScreen ? {} : { boardWidth: 450 })}
                         {
                         ...(gameStarted ?
@@ -119,7 +119,7 @@ export default function Game({ playerName, resetName }) {
                                 key: 'main',
                                 onPieceDrop: sendMove,
                                 arePiecesDraggable: playerTurn,
-                                isDraggablePiece: ({ piece }) => piece[0] === playerColor[0],
+                                isDraggablePiece: (e) => e.piece[0] === playerColor[0],
                                 getPositionObject: (e) => {                                    
                                     positionObj.current = e
                                 }
