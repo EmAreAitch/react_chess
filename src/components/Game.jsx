@@ -119,7 +119,7 @@ export default function Game({ playerName, resetName }) {
                                 key: 'main',
                                 onPieceDrop: sendMove,
                                 arePiecesDraggable: playerTurn,
-                                isDraggablePiece: ({ piece }) => piece[0] == playerColor[0],
+                                isDraggablePiece: ({ piece }) => piece[0] === playerColor[0],
                                 getPositionObject: (e) => {                                    
                                     positionObj.current = e
                                 }

@@ -35,7 +35,7 @@ export default function GameDetails({ roomCode, playerName, playerColor, opponen
     return <Box display='flex' justifyContent='center' alignItems='start' padding={2} width='100%'>
         <Paper variant='outlined' sx={{ paddingX: 2, paddingY: 1, display: 'flex', gap: 2, justifyContent: 'center' }}>
             <Stack direction={{ xs:'column', lg: 'row' }} alignItems={'center'} justifyContent={'center'} spacing={1} divider={getDivider()} paddingY={0.5}>
-                <Stack direction={'row'} justifyContent={'center'} spacing={1} alignContent={'center'}>
+                <Stack direction={'row'} justifyContent={'center'} spacing={1} alignContent={'center'} width={'275px'}>
                     <Button size='small' variant="contained" endIcon={<HandshakeIcon />} disabled={isDrawDisabled()} onClick={offerDraw}>
                         Offer Draw
                     </Button>
