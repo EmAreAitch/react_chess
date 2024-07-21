@@ -90,7 +90,7 @@ export default function Game({ playerName, resetName }) {
     }, [snackbarOpen]);
 
     return (
-        <>
+        <Box marginBottom={1}>
             {roomJoined ? (
                 <GameDetails
                     roomCode={roomCode}
@@ -146,6 +146,6 @@ export default function Game({ playerName, resetName }) {
                     </Stack>
                 }
             />
-        </>
+        </Box>
     );
 }
