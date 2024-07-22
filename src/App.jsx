@@ -19,7 +19,7 @@ function App() {
       color={'#F0D9B5'}
       boxShadow={'0px 0px 20px 15px black, inset 0px 0px 15px 15px black'}
       fontWeight={1000}
-      underline='hover'
+      underline='always'
       href='https://github.com/EmAreAitch'
       target="_blank"
       rel="noopener"

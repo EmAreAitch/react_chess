@@ -8,7 +8,7 @@ import GameEndModal from "./GameEndModal";
 import { useImmerReducer } from "use-immer";
 import gameReducer from "../reducers/GameReducer";
 
-export default function Game({ playerName, resetName }) {    
+export default function Game({ playerName, resetName }) {
     const [gameState, dispatch] = useImmerReducer(gameReducer, {
         roomCode: null,
         roomJoined: false,
@@ -16,57 +16,67 @@ export default function Game({ playerName, resetName }) {
         result: undefined,
         opponentName: undefined,
         fen: 'start',
-        playerColor: undefined,
+        playerColor: 'white',
         snackbarOpen: false,
         playerTurn: false
     })
 
     const isSmallScreen = useMediaQuery((theme) => theme.breakpoints.down('sm'));
-    const consumer = useMemo(() => createConsumer(`${import.meta.env.PROD ? import.meta.env.VITE_DOMAIN : "ws://0.0.0.0:3000"}/cable?name=${playerName}`), []); // Player name does not change
+    const consumer = useRef(null)
     const cable = useRef(undefined);
-    const { roomCode, roomJoined, gameStarted, result, opponentName, fen, playerColor, snackbarOpen, playerTurn } = gameState
     const positionObj = useRef(undefined)
+    const { roomCode, roomJoined, gameStarted, result, opponentName, fen, playerColor, snackbarOpen, playerTurn } = gameState
     const connectionHandler = {
         received: (data) => dispatch({ type: data.status, data }),
     };
+
+    window.consumer = consumer.current
+    window.cable = cable.current
 
     const sendMove = (sourceSquare, targetSquare, piece) => {
         const position = { ...positionObj.current }
         position[targetSquare] = piece
         delete position[sourceSquare]
-        dispatch({type: 'set_fen',fen: position})
+        dispatch({ type: 'set_fen', fen: position })
         cable.current?.send({ move: sourceSquare + targetSquare, promotion: piece[1] });
         return true
     };
 
     const handlePlayAgain = () => {
         dispatch({ type: 'play_again' })
+        consumer.current?.disconnect()
         cable.current?.unsubscribe()
     }
 
     const handleNewGame = (action) => {
         dispatch({ type: 'set_room', roomCode: undefined })
+        consumer.current = createConsumer(`${import.meta.env.PROD ? import.meta.env.VITE_DOMAIN : "ws://0.0.0.0:3000"}/cable?name=${playerName}`)
         switch (action.type) {
             case 'new_room':
-                cable.current = consumer.subscriptions.create({ channel: "PvpChannel" }, connectionHandler)
+                cable.current = consumer.current.subscriptions.create({ channel: "PvpChannel", vs_friend: true, color: playerColor }, connectionHandler)
                 break;
 
             case 'join_room':
-                cable.current = consumer.subscriptions.create({ channel: "PvpChannel", room_code: action.room }, connectionHandler)
+                cable.current = consumer.current.subscriptions.create({ channel: "PvpChannel", room_code: action.room }, connectionHandler)
                 break;
 
             case 'bot':
-                cable.current = consumer.subscriptions.create({ channel: "BotChannel", difficulty: action.difficulty }, connectionHandler)
+                cable.current = consumer.current.subscriptions.create({ channel: "BotChannel", difficulty: action.difficulty, color: playerColor }, connectionHandler)
+                break;
+
+            case 'player':
+                cable.current = consumer.current.subscriptions.create({ channel: "PvpChannel" }, connectionHandler)
                 break;
 
             default:
                 console.log("Invalid Type")
+                consumer.current?.disconnect()
                 break;
         }
     }
 
     const handleResign = () => {
-        cable.current?.perform("resign")
+        if (gameStarted) cable.current?.perform("resign")
         dispatch({ type: 'player_resign' })
     }
 
@@ -77,6 +87,10 @@ export default function Game({ playerName, resetName }) {
     const handleDrawResponse = (response) => {
         cable.current?.perform("draw_offer_response", { isAccepted: response })
         dispatch({ type: 'set_snackbar', snackbarOpen: false })
+    }
+
+    const handleColorChange = () => {
+        dispatch({ type: 'toggle_color' })
     }
 
     useEffect(() => {
@@ -103,7 +117,14 @@ export default function Game({ playerName, resetName }) {
                     offerDraw={handleOfferDraw}
                 />
             ) : (
-                <RoomForm handleNewGame={handleNewGame} loading={roomCode === undefined} playerName={playerName} resetName={resetName} />
+                <RoomForm
+                    handleNewGame={handleNewGame}
+                    loading={roomCode === undefined}
+                    playerName={playerName}
+                    resetName={resetName}
+                    playerColor={playerColor}
+                    handleColorChange={handleColorChange}
+                />
             )}
             <Box display='flex' justifyContent='center'>
                 <Box width={{ xs: '90%', sm: 450 }}>
@@ -111,7 +132,7 @@ export default function Game({ playerName, resetName }) {
                         position={fen}
                         key="playground"
                         customDarkSquareStyle={{ backgroundColor: '#6d1b7b' }}
-                        boardOrientation={playerColor}                           
+                        boardOrientation={playerColor}
                         {...(isSmallScreen ? {} : { boardWidth: 450 })}
                         {
                         ...(gameStarted ?
@@ -120,7 +141,7 @@ export default function Game({ playerName, resetName }) {
                                 onPieceDrop: sendMove,
                                 arePiecesDraggable: playerTurn,
                                 isDraggablePiece: (e) => e.piece[0] === playerColor[0],
-                                getPositionObject: (e) => {                                    
+                                getPositionObject: (e) => {
                                     positionObj.current = e
                                 }
                             } :

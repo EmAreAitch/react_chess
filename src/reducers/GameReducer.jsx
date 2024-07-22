@@ -12,7 +12,7 @@ const notyf = new Notyf({
 
 const gameReducer = (state, action) => {
     switch (action.type) {
-        case 'set_room': {
+        case 'set_room': {            
             state.roomCode = action.roomCode
             break
         }
@@ -61,8 +61,8 @@ const gameReducer = (state, action) => {
             state.result = 'stalemate'
             break;
         }
-        case 'error': {
-            notyf.error('Unable to join room');
+        case 'error': {            
+            notyf.error(action.data.message);
             state.roomCode = null
             break;
         }
@@ -111,6 +111,11 @@ const gameReducer = (state, action) => {
                 type: 'warning',
                 message: "Wait for 2 mintues since last offer"
             });
+            break
+        }
+
+        case 'toggle_color': {
+            state.playerColor = state.playerColor === 'white' ? 'black' : 'white'
             break
         }
         default: {

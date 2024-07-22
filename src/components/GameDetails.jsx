@@ -39,7 +39,7 @@ export default function GameDetails({ roomCode, playerName, playerColor, opponen
                     <Button size='small' variant="contained" endIcon={<HandshakeIcon />} disabled={isDrawDisabled()} onClick={offerDraw}>
                         Offer Draw
                     </Button>
-                    <Button size='small' variant="contained" endIcon={<EmojiFlagsIcon />} disabled={!gameStarted} onClick={resign}>
+                    <Button size='small' variant="contained" endIcon={<EmojiFlagsIcon />} onClick={resign}>
                         Resign
                     </Button>                                        
                 </Stack>

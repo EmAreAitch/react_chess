@@ -6,8 +6,7 @@ export default function NameForm({ setPlayerName }) {
     const handleSubmit = (e) => {
         e.preventDefault();
         localStorage.setItem('name', name);
-        sessionStorage.setItem('name', name);
-        console.log(name)
+        sessionStorage.setItem('name', name);        
         setPlayerName(name);
     }
     return (
