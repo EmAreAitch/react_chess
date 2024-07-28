@@ -28,10 +28,7 @@ export default function Game({ playerName, resetName }) {
     const { roomCode, roomJoined, gameStarted, result, opponentName, fen, playerColor, snackbarOpen, playerTurn } = gameState
     const connectionHandler = {
         received: (data) => dispatch({ type: data.status, data }),
-    };
-
-    window.consumer = consumer.current
-    window.cable = cable.current
+    };    
 
     const sendMove = (sourceSquare, targetSquare, piece) => {
         const position = { ...positionObj.current }
@@ -103,8 +100,15 @@ export default function Game({ playerName, resetName }) {
         }
     }, [snackbarOpen]);
 
+    useEffect(() => {
+        if (roomJoined === false) {
+            cable.current?.unsubscribe()
+            consumer.current?.disconnect()
+        }
+    }, [roomJoined])
+
     return (
-        <Box marginBottom={1}>
+        <Box>
             {roomJoined ? (
                 <GameDetails
                     roomCode={roomCode}

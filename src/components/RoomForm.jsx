@@ -40,7 +40,7 @@ export default function RoomForm({ handleNewGame, loading, playerName, resetName
                         <IconButton onClick={handleColorChange} disabled={value === 'player'}>
                             <Avatar sx={{ bgcolor: '#dadada' }} src={`${playerColor}.svg`} />
                         </IconButton>
-                        <Button size='large' onClick={resetName} justifyContent={'center'} alignItems={'center'} sx={{paddingX: 0}}>
+                        <Button size='large' onClick={resetName} sx={{paddingX: 0}}>
                             <Typography borderBottom={'1px solid'} borderColor={'primary.main'} paddingX={2} color={'white'} textTransform={'none'}>
                                 {playerName}
                             </Typography>

@@ -10,7 +10,7 @@ export default function NameForm({ setPlayerName }) {
         setPlayerName(name);
     }
     return (
-        <Box display='flex' justifyContent='center' alignItems='center' minHeight='100vh'>
+        <Box display='flex' justifyContent='center' alignItems='center' height={'100%'} flexGrow={1}>
             <Paper sx={{ display: 'grid', gridGap: 20, padding: 3 }} variant='outlined'>
                 <Typography variant='h6' textAlign={'center'} >
                     Give yourself a name
