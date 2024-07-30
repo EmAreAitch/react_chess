@@ -106,7 +106,7 @@ export default function Game({ playerName, resetName }) {
             consumer.current?.disconnect()
         }
     }, [roomJoined])
-
+	
     return (
         <Box>
             {roomJoined ? (
