@@ -1,6 +1,6 @@
 # React Chess Frontend for QuickMate
 
-A modern, interactive chess game built with React. You can play the game at [QuickMate](https://quickmate.vercel.app "QuickMate")
+A modern, interactive chess game built with React and Rails. You can play the game at [QuickMate](https://quickmate.vercel.app "QuickMate")
 
 <div align="center">
   <img height="467" width="831" alt="quickmate.vercel.app" title="LOL" src="https://images2.imgbox.com/4f/43/K3SosQbF_o.png" />
